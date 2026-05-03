@@ -146,17 +146,20 @@
 
 <script>
 const SHEET_ID = "1fvN690wAz5uj682mXA60Mor6raNGIztORd-l2BVflSM";
-const SHEET_NAME = "Доны";
+const SHEET_NAME = "Лист1";
 const APP_ID = 54576691;
 
-vkBridge.send("VKWebAppInit");
+// Инициализируем VK Bridge если доступен
+try { vkBridge.send("VKWebAppInit"); } catch(e) {}
 
 async function loadDonors() {
   try {
     const url = "https://docs.google.com/spreadsheets/d/" + SHEET_ID + "/gviz/tq?tqx=out:json&sheet=" + encodeURIComponent(SHEET_NAME);
     const resp = await fetch(url);
     const text = await resp.text();
-    const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\((.+)\)/s)[1]);
+    const match = text.match(/google\.visualization\.Query\.setResponse\((.+)\)/s);
+    if (!match) throw new Error("Не удалось распарсить ответ: " + text.substring(0, 200));
+    const json = JSON.parse(match[1]);
     const rows = json.table.rows;
 
     const donors = [];
@@ -178,7 +181,7 @@ async function loadDonors() {
         method: "users.get",
         params: { user_ids: ids, fields: "photo_100", v: "5.199", access_token: "" }
       });
-      if (vkResp.response) {
+      if (vkResp && vkResp.response) {
         const photoMap = {};
         for (const u of vkResp.response) {
           photoMap[String(u.id)] = u.photo_100;
@@ -187,11 +190,23 @@ async function loadDonors() {
           if (photoMap[d.id]) d.photo = photoMap[d.id];
         }
       }
-    } catch(e) { /* фото не загрузились, используем аватарки */ }
+    } catch(e) {
+      // Вне VK фото берём напрямую через API
+      try {
+        const ids = donors.map(d => d.id).join(",");
+        const r = await fetch("https://api.vk.com/method/users.get?user_ids=" + ids + "&fields=photo_100&v=5.199");
+        const data = await r.json();
+        if (data.response) {
+          const photoMap = {};
+          for (const u of data.response) { photoMap[String(u.id)] = u.photo_100; }
+          for (const d of donors) { if (photoMap[d.id]) d.photo = photoMap[d.id]; }
+        }
+      } catch(e2) {}
+    }
 
     renderDonors(donors);
   } catch(e) {
-    document.getElementById("app").innerHTML = '<div class="err">Не удалось загрузить список хиромантов.<br>Попробуйте позже.</div>';
+    document.getElementById("app").innerHTML = '<div class="err">Ошибка: ' + e.message + '</div>';
   }
 }
 
@@ -215,7 +230,7 @@ function choose(id, name) {
 }
 
 function skip() {
-  vkBridge.send("VKWebAppClose", { status: "success", payload: { pobeditel: "Не выбран" } });
+  try { vkBridge.send("VKWebAppClose", { status: "success", payload: { pobeditel: "Не выбран" } }); } catch(e) {}
 }
 
 loadDonors();
