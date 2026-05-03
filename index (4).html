@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Выбор хироманта</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
+<style>
+  :root {
+    --bg: #0d0b12;
+    --surface: #14111e;
+    --border: #2e2840;
+    --gold: #c9a84c;
+    --gold2: #e8c97a;
+    --text: #e8e0f0;
+    --muted: #7a6f8e;
+    --green: #4caa77;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
+
+  header {
+    text-align: center;
+    padding: 32px 20px 20px;
+    background: linear-gradient(180deg, rgba(100,60,180,.1) 0%, transparent 100%);
+  }
+  header .eye { font-size: 36px; margin-bottom: 8px; }
+  header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.7rem; font-weight: 300;
+    letter-spacing: .06em;
+    background: linear-gradient(135deg, var(--gold), var(--gold2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  header p { color: var(--muted); font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; margin-top: 6px; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all .2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(201,168,76,.08), transparent);
+    opacity: 0;
+    transition: opacity .2s;
+  }
+  .card:active { transform: scale(.96); border-color: var(--gold); }
+  .card:active::before { opacity: 1; }
+
+  .card img {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--border);
+    margin-bottom: 10px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .card .name {
+    font-size: .82rem;
+    font-weight: 500;
+    letter-spacing: .02em;
+    line-height: 1.3;
+  }
+
+  .skip {
+    display: block;
+    margin: 8px 16px 0;
+    padding: 14px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--muted);
+    font-family: 'Montserrat', sans-serif;
+    font-size: .78rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    width: calc(100% - 32px);
+    transition: all .2s;
+  }
+  .skip:active { border-color: var(--muted); color: var(--text); }
+
+  .loading {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+    font-size: .85rem;
+  }
+  .spinner {
+    width: 32px; height: 32px;
+    border: 2px solid rgba(201,168,76,.2);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+    margin: 0 auto 16px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .success {
+    text-align: center;
+    padding: 60px 20px;
+  }
+  .success .icon { font-size: 48px; margin-bottom: 16px; }
+  .success h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem; font-weight: 300;
+    color: var(--gold2);
+    margin-bottom: 8px;
+  }
+  .success p { color: var(--muted); font-size: .82rem; }
+
+  .err { text-align: center; padding: 40px 20px; color: var(--muted); font-size: .82rem; line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="loading"><div class="spinner"></div>Загружаю список...</div>
+</div>
+
+<script>
+const SHEET_ID = "1fvN690wAz5uj682mXA60Mor6raNGIztORd-l2BVflSM";
+const SHEET_NAME = "Лист1";
+const APP_ID = 54576691;
+
+vkBridge.send("VKWebAppInit");
+
+async function loadDonors() {
+  try {
+    const url = "https://docs.google.com/spreadsheets/d/" + SHEET_ID + "/gviz/tq?tqx=out:json&sheet=" + encodeURIComponent(SHEET_NAME);
+    const resp = await fetch(url);
+    const text = await resp.text();
+    const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\((.+)\)/s)[1]);
+    const rows = json.table.rows;
+
+    const donors = [];
+    for (const row of rows) {
+      if (!row.c || !row.c[0]) continue;
+      const id   = row.c[0] ? String(row.c[0].v) : "";
+      const name = row.c[1] ? String(row.c[1].v) : "";
+      const sur  = row.c[2] ? String(row.c[2].v) : "";
+      const stat = row.c[3] ? String(row.c[3].v).toLowerCase() : "";
+      if (stat === "активный" && id && name) {
+        donors.push({ id, name: name + " " + sur, photo: "https://api.dicebear.com/7.x/initials/svg?seed=" + encodeURIComponent(name + " " + sur) + "&backgroundColor=2e2840&textColor=c9a84c" });
+      }
+    }
+
+    // Загружаем фото из VK
+    try {
+      const ids = donors.map(d => d.id).join(",");
+      const vkResp = await vkBridge.send("VKWebAppCallAPIMethod", {
+        method: "users.get",
+        params: { user_ids: ids, fields: "photo_100", v: "5.199", access_token: "" }
+      });
+      if (vkResp.response) {
+        const photoMap = {};
+        for (const u of vkResp.response) {
+          photoMap[String(u.id)] = u.photo_100;
+        }
+        for (const d of donors) {
+          if (photoMap[d.id]) d.photo = photoMap[d.id];
+        }
+      }
+    } catch(e) { /* фото не загрузились, используем аватарки */ }
+
+    renderDonors(donors);
+  } catch(e) {
+    document.getElementById("app").innerHTML = '<div class="err">Не удалось загрузить список хиромантов.<br>Попробуйте позже.</div>';
+  }
+}
+
+function renderDonors(donors) {
+  let html = '<header><div class="eye">🔮</div><h1>Выберите хироманта</h1><p>Чей разбор понравился больше?</p></header><div class="grid">';
+  for (const d of donors) {
+    html += '<div class="card" onclick="choose(\'' + d.id + '\', \'' + d.name.replace(/\'/g, " ") + '\')">' +
+      '<img src="' + d.photo + '" onerror="this.src=\'https://vk.com/images/camera_200.png\'">' +
+      '<div class="name">' + d.name + '</div>' +
+      '</div>';
+  }
+  html += '</div><button class="skip" onclick="skip()">Никто не понравился</button>';
+  document.getElementById("app").innerHTML = html;
+}
+
+function choose(id, name) {
+  document.getElementById("app").innerHTML = '<div class="success"><div class="icon">✨</div><h2>' + name + '</h2><p>Спасибо за выбор!</p></div>';
+  setTimeout(() => {
+    vkBridge.send("VKWebAppClose", { status: "success", payload: { pobeditel: name } });
+  }, 1500);
+}
+
+function skip() {
+  vkBridge.send("VKWebAppClose", { status: "success", payload: { pobeditel: "Не выбран" } });
+}
+
+loadDonors();
+</script>
+</body>
+</html>
