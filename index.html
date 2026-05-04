@@ -80,9 +80,9 @@ function loadDonors() {
       for (var i = 0; i < rows.length; i++) {
         var row = rows[i];
         if (!row.c || !row.c[0] || !row.c[0].v) continue;
-        var id   = String(row.c[0].v);
-        var name = row.c[1] && row.c[1].v ? String(row.c[1].v) : "";
-        var sur  = row.c[2] && row.c[2].v ? String(row.c[2].v) : "";
+        var id   = row.c[0].f ? String(row.c[0].f).trim() : String(row.c[0].v);
+        var name = row.c[1] && row.c[1].v ? String(row.c[1].v).trim() : "";
+        var sur  = row.c[2] && row.c[2].v ? String(row.c[2].v).trim() : "";
         var stat = row.c[3] && row.c[3].v ? String(row.c[3].v).toLowerCase().trim() : "";
         if (id && name && stat.indexOf("акт") === 0) {
           donors.push({id: id, name: name + " " + sur, photo: "https://ui-avatars.com/api/?name=" + encodeURIComponent(name + " " + sur) + "&background=2e2840&color=c9a84c&size=100&bold=true"});
