@@ -41,11 +41,25 @@ function choose(idx) {
   var d = donors[idx];
   document.getElementById("app").innerHTML = "<div class='success'><div style='font-size:48px;margin-bottom:16px'>&#10024;</div><h2>" + d.name + "</h2><p style='color:var(--muted);font-size:.82rem'>Спасибо за выбор!</p></div>";
   setTimeout(function() {
+    // Отправляем имя победителя боту сообщества
+    try {
+      vkBridge.send("VKWebAppSendPayload", {
+        group_id: 172607925,
+        payload: {pobeditel: d.name}
+      });
+    } catch(e) {}
+    // Также закрываем приложение
     try { vkBridge.send("VKWebAppClose", {status:"success", payload:{pobeditel: d.name}}); } catch(e) {}
   }, 1500);
 }
 
 function skip() {
+  try {
+    vkBridge.send("VKWebAppSendPayload", {
+      group_id: 172607925,
+      payload: {pobeditel: "Не выбран"}
+    });
+  } catch(e) {}
   try { vkBridge.send("VKWebAppClose", {status:"success", payload:{pobeditel:"Не выбран"}}); } catch(e) {}
 }
 
