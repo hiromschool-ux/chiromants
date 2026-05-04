@@ -86,7 +86,7 @@ async function loadDonors() {
     var url = "https://docs.google.com/spreadsheets/d/" + SHEET_ID + "/gviz/tq?tqx=out:json&sheet=" + encodeURIComponent(SHEET_NAME);
     var resp = await fetch(url);
     var text = await resp.text();
-    var match = text.match(/google\.visualization\.Query\.setResponse\((\{.+\})\)/s);
+    var match = text.match(/google\.visualization\.Query\.setResponse\((\{[\s\S]+\})\)/);
     if (!match) { showErr("Не удалось прочитать таблицу. Проверьте доступ."); return; }
     var json = JSON.parse(match[1]);
     var rows = json.table.rows;
@@ -97,7 +97,7 @@ async function loadDonors() {
       var name = row.c[1] ? String(row.c[1].v) : "";
       var sur  = row.c[2] ? String(row.c[2].v) : "";
       var stat = row.c[3] ? String(row.c[3].v).toLowerCase().trim() : "";
-      if (stat === "активный" && id && name) {
+      if (stat.indexOf("акт") === 0 && id && name) {
         donors.push({
           id: id,
           name: name + " " + sur,
