@@ -7,113 +7,110 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
 <style>
-  :root {
-    --bg: #0d0b12; --surface: #14111e; --border: #2e2840;
-    --gold: #c9a84c; --gold2: #e8c97a; --text: #e8e0f0; --muted: #7a6f8e;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  body { background: var(--bg); color: var(--text); font-family: "Montserrat", sans-serif; font-weight: 300; min-height: 100vh; padding-bottom: 40px; }
-  header { text-align: center; padding: 32px 20px 20px; background: linear-gradient(180deg, rgba(100,60,180,.1) 0%, transparent 100%); }
-  header .eye { font-size: 36px; margin-bottom: 8px; }
-  header h1 { font-family: "Cormorant Garamond", serif; font-size: 1.7rem; font-weight: 300; letter-spacing: .06em; background: linear-gradient(135deg, var(--gold), var(--gold2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  header p { color: var(--muted); font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; margin-top: 6px; }
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 16px; }
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px 12px; text-align: center; cursor: pointer; transition: all .2s; }
-  .card:active { transform: scale(.96); border-color: var(--gold); }
-  .card img { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border); margin-bottom: 10px; display: block; margin-left: auto; margin-right: auto; }
-  .card .name { font-size: .82rem; font-weight: 500; letter-spacing: .02em; line-height: 1.3; }
-  .skip { display: block; margin: 8px 16px 0; padding: 14px; background: transparent; border: 1px solid var(--border); border-radius: 12px; color: var(--muted); font-family: "Montserrat", sans-serif; font-size: .78rem; letter-spacing: .1em; text-transform: uppercase; cursor: pointer; width: calc(100% - 32px); }
-  .loading { text-align: center; padding: 60px 20px; color: var(--muted); font-size: .85rem; }
-  .spinner { width: 32px; height: 32px; border: 2px solid rgba(201,168,76,.2); border-top-color: var(--gold); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 16px; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .success { text-align: center; padding: 60px 20px; }
-  .success .icon { font-size: 48px; margin-bottom: 16px; }
-  .success h2 { font-family: "Cormorant Garamond", serif; font-size: 1.5rem; font-weight: 300; color: var(--gold2); margin-bottom: 8px; }
-  .success p { color: var(--muted); font-size: .82rem; }
-  .err { text-align: center; padding: 40px 20px; color: var(--muted); font-size: .78rem; line-height: 1.8; word-break: break-all; }
+  :root { --bg:#0d0b12;--surface:#14111e;--border:#2e2840;--gold:#c9a84c;--gold2:#e8c97a;--text:#e8e0f0;--muted:#7a6f8e; }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  body{background:var(--bg);color:var(--text);font-family:"Montserrat",sans-serif;font-weight:300;min-height:100vh;padding-bottom:40px}
+  header{text-align:center;padding:32px 20px 20px;background:linear-gradient(180deg,rgba(100,60,180,.1) 0%,transparent 100%)}
+  header .eye{font-size:36px;margin-bottom:8px}
+  header h1{font-family:"Cormorant Garamond",serif;font-size:1.7rem;font-weight:300;letter-spacing:.06em;background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  header p{color:var(--muted);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;margin-top:6px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:16px}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px 12px;text-align:center;cursor:pointer;transition:all .2s}
+  .card:active{transform:scale(.96);border-color:var(--gold)}
+  .card img{width:72px;height:72px;border-radius:50%;object-fit:cover;border:2px solid var(--border);margin:0 auto 10px;display:block}
+  .card .name{font-size:.82rem;font-weight:500;line-height:1.3}
+  .skip{display:block;margin:8px 16px 0;padding:14px;background:transparent;border:1px solid var(--border);border-radius:12px;color:var(--muted);font-family:"Montserrat",sans-serif;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;width:calc(100% - 32px)}
+  .loading{text-align:center;padding:60px 20px;color:var(--muted);font-size:.85rem}
+  .spinner{width:32px;height:32px;border:2px solid rgba(201,168,76,.2);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .success{text-align:center;padding:60px 20px}
+  .success .icon{font-size:48px;margin-bottom:16px}
+  .success h2{font-family:"Cormorant Garamond",serif;font-size:1.5rem;font-weight:300;color:var(--gold2);margin-bottom:8px}
+  .success p{color:var(--muted);font-size:.82rem}
+  .err{text-align:center;padding:40px 20px;color:var(--muted);font-size:.78rem;line-height:1.8;word-break:break-all}
 </style>
 </head>
 <body>
 <div id="app"><div class="loading"><div class="spinner"></div>Загружаю список...</div></div>
 <script>
-const SHEET_ID = "1fvN690wAz5uj682mXA60Mor6raNGIztORd-l2BVflSM";
-const SHEET_NAME = "Доны";
+var SHEET_ID = "1fvN690wAz5uj682mXA60Mor6raNGIztORd-l2BVflSM";
+var SHEET_NAME = "Доны";
+var donors = [];
 
 try { vkBridge.send("VKWebAppInit"); } catch(e) {}
 
 function showErr(msg) {
-  document.getElementById("app").innerHTML = '<div class="err">' + msg + '</div>';
+  document.getElementById("app").innerHTML = "<div class='err'>" + msg + "</div>";
 }
 
-async function loadDonors() {
-  try {
-    const url = "https://docs.google.com/spreadsheets/d/" + SHEET_ID + "/gviz/tq?tqx=out:json&sheet=" + encodeURIComponent(SHEET_NAME);
-    showErr("Запрашиваю данные...<br>" + url);
-    const resp = await fetch(url);
-    showErr("Статус ответа: " + resp.status);
-    const text = await resp.text();
-    showErr("Получен ответ длиной: " + text.length + " символов<br>Начало: " + text.substring(0, 100));
-    const match = text.match(/google\.visualization\.Query\.setResponse\((.+)\)/s);
-    if (!match) throw new Error("Не удалось распарсить. Текст: " + text.substring(0, 300));
-    const json = JSON.parse(match[1]);
-    const rows = json.table.rows;
-    showErr("Строк найдено: " + rows.length);
-
-    const donors = [];
-    for (const row of rows) {
-      if (!row.c || !row.c[0]) continue;
-      const id  = row.c[0] ? String(row.c[0].v) : "";
-      const name = row.c[1] ? String(row.c[1].v) : "";
-      const sur  = row.c[2] ? String(row.c[2].v) : "";
-      const stat = row.c[3] ? String(row.c[3].v).toLowerCase() : "";
-      if (stat === "активный" && id && name) {
-        donors.push({ id, name: name + " " + sur, photo: "https://ui-avatars.com/api/?name=" + encodeURIComponent(name + " " + sur) + "&background=2e2840&color=c9a84c&size=100" });
-      }
-    }
-
-    if (donors.length === 0) { showErr("Активных донов не найдено. Проверьте статусы в таблице."); return; }
-
-    // Загружаем фото из VK
-    try {
-      const ids = donors.map(d => d.id).join(",");
-      const vkResp = await vkBridge.send("VKWebAppCallAPIMethod", {
-        method: "users.get",
-        params: { user_ids: ids, fields: "photo_100", v: "5.199", access_token: "" }
-      });
-      if (vkResp && vkResp.response) {
-        const photoMap = {};
-        for (const u of vkResp.response) { photoMap[String(u.id)] = u.photo_100; }
-        for (const d of donors) { if (photoMap[d.id]) d.photo = photoMap[d.id]; }
-      }
-    } catch(e) {}
-
-    renderDonors(donors);
-  } catch(e) {
-    showErr("Ошибка: " + e.message);
-  }
-}
-
-function renderDonors(donors) {
-  let html = '<header><div class="eye">&#128302;</div><h1>Выберите хироманта</h1><p>Чей разбор понравился больше?</p></header><div class="grid">';
-  for (const d of donors) {
-    const safeName = d.name.replace(/"/g, "");
-    html += '<div class="card" onclick="choose('' + d.id + '', '' + safeName + '')">' +
-      '<img src="' + d.photo + '" onerror="this.src='https://ui-avatars.com/api/?name=X&background=2e2840&color=c9a84c&size=100'">' +
-      '<div class="name">' + d.name + '</div></div>';
-  }
-  html += '</div><button class="skip" onclick="skip()">Никто не понравился</button>';
-  document.getElementById("app").innerHTML = html;
-}
-
-function choose(id, name) {
-  document.getElementById("app").innerHTML = '<div class="success"><div class="icon">&#10024;</div><h2>' + name + '</h2><p>Спасибо за выбор!</p></div>';
+function choose(idx) {
+  var d = donors[idx];
+  document.getElementById("app").innerHTML = "<div class='success'><div class='icon'>&#10024;</div><h2>" + d.name + "</h2><p>Спасибо за выбор!</p></div>";
   setTimeout(function() {
-    try { vkBridge.send("VKWebAppClose", { status: "success", payload: { pobeditel: name } }); } catch(e) {}
+    try { vkBridge.send("VKWebAppClose", {status:"success", payload:{pobeditel: d.name}}); } catch(e) {}
   }, 1500);
 }
 
 function skip() {
-  try { vkBridge.send("VKWebAppClose", { status: "success", payload: { pobeditel: "Не выбран" } }); } catch(e) {}
+  try { vkBridge.send("VKWebAppClose", {status:"success", payload:{pobeditel:"Не выбран"}}); } catch(e) {}
+}
+
+function renderDonors() {
+  var html = "<header><div class='eye'>&#128302;</div><h1>Выберите хироманта</h1><p>Чей разбор понравился больше?</p></header><div class='grid'>";
+  for (var i = 0; i < donors.length; i++) {
+    html += "<div class='card' onclick='choose(" + i + ")'>";
+    html += "<img src='" + donors[i].photo + "' onerror="this.src='https://ui-avatars.com/api/?name=X&background=2e2840&color=c9a84c&size=100'">";
+    html += "<div class='name'>" + donors[i].name + "</div></div>";
+  }
+  html += "</div><button class='skip' onclick='skip()'>Никто не понравился</button>";
+  document.getElementById("app").innerHTML = html;
+}
+
+async function loadPhotos() {
+  try {
+    var ids = donors.map(function(d) { return d.id; }).join(",");
+    var resp = await vkBridge.send("VKWebAppCallAPIMethod", {
+      method: "users.get",
+      params: {user_ids: ids, fields: "photo_100", v: "5.199", access_token: ""}
+    });
+    if (resp && resp.response) {
+      var map = {};
+      for (var u of resp.response) { map[String(u.id)] = u.photo_100; }
+      for (var d of donors) { if (map[d.id]) d.photo = map[d.id]; }
+    }
+  } catch(e) {}
+}
+
+async function loadDonors() {
+  try {
+    var url = "https://docs.google.com/spreadsheets/d/" + SHEET_ID + "/gviz/tq?tqx=out:json&sheet=" + encodeURIComponent(SHEET_NAME);
+    var resp = await fetch(url);
+    var text = await resp.text();
+    var match = text.match(/google\.visualization\.Query\.setResponse\((\{.+\})\)/s);
+    if (!match) { showErr("Не удалось прочитать таблицу. Проверьте доступ."); return; }
+    var json = JSON.parse(match[1]);
+    var rows = json.table.rows;
+    donors = [];
+    for (var row of rows) {
+      if (!row.c || !row.c[0] || !row.c[0].v) continue;
+      var id   = String(row.c[0].v);
+      var name = row.c[1] ? String(row.c[1].v) : "";
+      var sur  = row.c[2] ? String(row.c[2].v) : "";
+      var stat = row.c[3] ? String(row.c[3].v).toLowerCase().trim() : "";
+      if (stat === "активный" && id && name) {
+        donors.push({
+          id: id,
+          name: name + " " + sur,
+          photo: "https://ui-avatars.com/api/?name=" + encodeURIComponent(name + "+" + sur) + "&background=2e2840&color=c9a84c&size=100"
+        });
+      }
+    }
+    if (donors.length === 0) { showErr("Активных донов не найдено."); return; }
+    await loadPhotos();
+    renderDonors();
+  } catch(e) {
+    showErr("Ошибка: " + e.message);
+  }
 }
 
 loadDonors();
