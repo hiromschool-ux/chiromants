@@ -59,7 +59,7 @@ function renderDonors() {
   var html = "<header><div class='eye'>&#128302;</div><h1>Выберите хироманта</h1><p>Чей разбор понравился больше?</p></header><div class='grid'>";
   for (var i = 0; i < donors.length; i++) {
     html += "<div class='card' onclick='choose(" + i + ")'>";
-    html += "<img src='" + donors[i].photo + "' onerror="this.src='https://ui-avatars.com/api/?name=X&background=2e2840&color=c9a84c&size=100'">";
+    html += "<img src='" + donors[i].photo + "' onerror='this.onerror=null'>";
     html += "<div class='name'>" + donors[i].name + "</div></div>";
   }
   html += "</div><button class='skip' onclick='skip()'>Никто не понравился</button>";
