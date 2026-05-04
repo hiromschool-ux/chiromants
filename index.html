@@ -84,8 +84,14 @@ async function loadPhotos() {
 async function loadDonors() {
   try {
     var url = "https://docs.google.com/spreadsheets/d/" + SHEET_ID + "/gviz/tq?tqx=out:json&sheet=" + encodeURIComponent(SHEET_NAME);
-    var resp = await fetch(url);
+    showErr("Подключаюсь к таблице...");
+    var controller = new AbortController();
+    var timer = setTimeout(function() { controller.abort(); }, 8000);
+    var resp = await fetch(url, { signal: controller.signal });
+    clearTimeout(timer);
+    showErr("Получен ответ: " + resp.status);
     var text = await resp.text();
+    showErr("Данные получены, длина: " + text.length);
     var match = text.match(/google\.visualization\.Query\.setResponse\((\{[\s\S]+\})\)/);
     if (!match) { showErr("Не удалось прочитать таблицу. Проверьте доступ."); return; }
     var json = JSON.parse(match[1]);
